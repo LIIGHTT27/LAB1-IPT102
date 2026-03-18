@@ -23,7 +23,7 @@ body {
   min-height: 100vh;
 }
 
-/* ── Header ── */
+
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -63,14 +63,14 @@ header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-/* ── Layout ── */
+
 .layout {
   display: grid;
   grid-template-columns: 220px 1fr;
   min-height: calc(100vh - 61px);
 }
 
-/* ── Sidebar ── */
+
 aside {
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -125,14 +125,14 @@ aside {
 }
 .nav-btn.active .nav-badge { background: rgba(79,143,255,.2); border-color: rgba(79,143,255,.4); color: var(--accent); }
 
-/* ── Main ── */
+
 main { padding: 28px 32px; overflow-y: auto; }
 
-/* ── Panels ── */
+
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* ── Section headers ── */
+
 .section-head {
   display: flex; align-items: flex-start; justify-content: space-between;
   margin-bottom: 20px;
@@ -140,7 +140,7 @@ main { padding: 28px 32px; overflow-y: auto; }
 .section-title { font-size: 18px; font-weight: 700; line-height: 1.3; }
 .section-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-/* ── Cards ── */
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -169,7 +169,7 @@ main { padding: 28px 32px; overflow-y: auto; }
   font-weight: 500;
 }
 
-/* ── Inputs & Controls ── */
+
 .row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; flex-wrap: wrap; }
 
 input[type=text], select, textarea {
@@ -196,7 +196,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 
 .field { flex: 1; min-width: 140px; }
 
-/* ── Buttons ── */
+
 .btn {
   padding: 9px 18px;
   border-radius: 6px;
@@ -227,7 +227,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .btn-sm { padding: 6px 12px; font-size: 12px; }
 .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
 
-/* ── Response box ── */
+
 .response-box {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -259,7 +259,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
   font-family: var(--mono);
 }
 
-/* ── Status badges ── */
+
 .status-badge {
   display: inline-flex; align-items: center; gap: 5px;
   font-size: 11px; font-family: var(--mono);
@@ -272,7 +272,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .status-badge.loading { background: rgba(79,143,255,.15); color: var(--accent); border: 1px solid rgba(79,143,255,.3); animation: pulse 1s ease-in-out infinite; }
 .status-badge.warn { background: rgba(245,200,66,.12); color: var(--accent4); border: 1px solid rgba(245,200,66,.3); }
 
-/* ── Timeline / log ── */
+
 .log-entry {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 10px 0;
@@ -290,14 +290,14 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .log-msg { font-size: 12px; line-height: 1.5; }
 .log-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-/* ── Code highlight colors ── */
+
 .key { color: #7ac1ff; }
 .str { color: var(--accent2); }
 .num { color: var(--accent4); }
 .bool { color: #ff9b71; }
 .null-val { color: var(--muted); }
 
-/* ── Grid ── */
+
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
 
@@ -316,7 +316,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .metric-value.red { color: var(--accent3); }
 .metric-value.yellow { color: var(--accent4); }
 
-/* ── Weather cards ── */
+
 .weather-card {
   background: linear-gradient(135deg, var(--surface), var(--surface2));
   border: 1px solid var(--border);
@@ -331,22 +331,22 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .weather-stat-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
 .weather-stat-value { font-size: 14px; font-weight: 600; font-family: var(--mono); }
 
-/* ── Joke card ── */
+
 .joke-setup { font-size: 15px; font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
 .joke-punchline { font-size: 14px; color: var(--accent2); font-style: italic; }
 
-/* ── IP info ── */
+
 .ip-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 @media (max-width: 860px) { .ip-info-grid { grid-template-columns: 1fr 1fr; } }
 
-/* ── Currency ── */
+
 .currency-result {
   font-size: 28px; font-weight: 700; font-family: var(--mono); color: var(--accent2);
   margin: 12px 0 4px;
 }
 .currency-rate { font-size: 12px; color: var(--muted); font-family: var(--mono); }
 
-/* ── Webhook panel ── */
+
 .webhook-log {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -369,10 +369,10 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .webhook-path { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .webhook-body { font-family: var(--mono); font-size: 11px; color: var(--text); margin-top: 6px; word-break: break-all; }
 
-/* ── Divider ── */
+
 .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
-/* ── Spinner ── */
+
 .spinner {
   display: inline-block; width: 14px; height: 14px;
   border: 2px solid rgba(79,143,255,.3);
@@ -382,7 +382,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Tabs ── */
+
 .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
 .tab {
   padding: 9px 18px;
@@ -397,14 +397,10 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 .tab:hover { color: var(--text); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ── Quote card ── */
-.quote-text { font-size: 16px; line-height: 1.7; font-style: italic; color: var(--text); margin-bottom: 10px; }
-.quote-author { font-size: 12px; color: var(--muted); font-family: var(--mono); }
 
-/* ── Dog image ── */
 #dog-img { width: 100%; border-radius: 8px; object-fit: cover; max-height: 260px; display: none; border: 1px solid var(--border); }
 
-/* ── Tip box ── */
+
 .tip {
   background: rgba(79,143,255,.07);
   border: 1px solid rgba(79,143,255,.2);
@@ -418,7 +414,7 @@ label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px
 }
 .tip .icon { font-size: 15px; flex-shrink: 0; }
 
-/* ── Scrollbars ── */
+
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
