@@ -1,0 +1,617 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Work 1 â€“ Third-Party API Integration (AJAX & Webhooks)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- â”€â”€ Header â”€â”€ -->
+<header>
+  <div class="header-left">
+    <span class="badge">Lab Work 1</span>
+    <div>
+      <h1>Third-Party API Integration</h1>
+      <p>AJAX &amp; Webhooks Â· Cloud IDE Deployable</p>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)">
+    <div class="status-dot"></div>
+    Live
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- â”€â”€ Sidebar â”€â”€ -->
+<aside>
+  <div class="nav-section">
+    <div class="nav-section-label">AJAX Demos</div>
+    <button class="nav-btn active" onclick="showPanel('weather', this)">
+      <span class="icon">ðŸŒ¤</span> Weather API
+      <span class="nav-badge">GET</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('joke', this)">
+      <span class="icon">ðŸ˜„</span> Joke API
+      <span class="nav-badge">GET</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('dog', this)">
+      <span class="icon">ðŸ¶</span> Dog Images
+      <span class="nav-badge">GET</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('quote', this)">
+      <span class="icon">ðŸ’¬</span> Quote API
+      <span class="nav-badge">GET</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('ip', this)">
+      <span class="icon">ðŸŒ</span> IP Geolocation
+      <span class="nav-badge">GET</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('currency', this)">
+      <span class="icon">ðŸ’±</span> Currency Exchange
+      <span class="nav-badge">GET</span>
+    </button>
+  </div>
+
+  <div class="nav-section" style="margin-top:8px">
+    <div class="nav-section-label">Webhooks</div>
+    <button class="nav-btn" onclick="showPanel('webhook', this)">
+      <span class="icon">ðŸª</span> Webhook Simulator
+      <span class="nav-badge">POST</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('post', this)">
+      <span class="icon">ðŸ“¤</span> POST Request
+      <span class="nav-badge">POST</span>
+    </button>
+  </div>
+
+  <div class="nav-section" style="margin-top:8px">
+    <div class="nav-section-label">Utilities</div>
+    <button class="nav-btn" onclick="showPanel('log', this)">
+      <span class="icon">ðŸ“‹</span> Activity Log
+      <span class="nav-badge" id="log-count">0</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('about', this)">
+      <span class="icon">ðŸ“–</span> How it Works
+    </button>
+  </div>
+</aside>
+
+<!-- â”€â”€ Main â”€â”€ -->
+<main>
+
+<!-- === WEATHER === -->
+<div class="panel active" id="panel-weather">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸŒ¤ Weather API</div>
+      <div class="section-sub">Fetches live weather using Open-Meteo (no API key required) Â· AJAX via fetch()</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo uses <strong>Open-Meteo</strong> (free, no key needed) + <strong>Geocoding API</strong> to convert a city name into coordinates, then fetches current weather data via <code>fetch()</code> (AJAX).</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Search City <span class="pill">Geocoding + Weather API</span></div>
+    <div class="row">
+      <div class="field">
+        <label>City Name</label>
+        <input type="text" id="weather-city" value="Manila" placeholder="e.g. Manila, Tokyo, London">
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchWeather()">
+          <span class="spinner" id="weather-spin" style="display:none"></span>
+          Fetch Weather
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="weather-result" style="display:none">
+    <div class="weather-card" id="weather-display">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="weather-city" id="w-city">â€”</div>
+          <div class="weather-desc" id="w-desc">â€”</div>
+        </div>
+        <div class="weather-temp" id="w-temp">â€”</div>
+      </div>
+      <div class="weather-grid">
+        <div class="weather-stat"><div class="weather-stat-label">Humidity</div><div class="weather-stat-value" id="w-hum">â€”</div></div>
+        <div class="weather-stat"><div class="weather-stat-label">Wind Speed</div><div class="weather-stat-value" id="w-wind">â€”</div></div>
+        <div class="weather-stat"><div class="weather-stat-label">Feels Like</div><div class="weather-stat-value" id="w-feels">â€”</div></div>
+        <div class="weather-stat"><div class="weather-stat-label">Cloud Cover</div><div class="weather-stat-value" id="w-cloud">â€”</div></div>
+      </div>
+    </div>
+    <div class="response-label" style="margin-top:14px">
+      <span>Raw API Response</span>
+      <span id="weather-status"></span>
+    </div>
+    <div class="response-box" id="weather-raw"></div>
+  </div>
+</div>
+
+<!-- === JOKE === -->
+<div class="panel" id="panel-joke">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ˜„ Joke API</div>
+      <div class="section-sub">Fetches random programming jokes Â· AJAX via XMLHttpRequest</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo intentionally uses the older <strong>XMLHttpRequest</strong> style (as well as <code>fetch()</code>) so you can compare both AJAX approaches side by side. Source: <strong>JokeAPI (v2)</strong>.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Parameters</div>
+    <div class="row">
+      <div class="field">
+        <label>Category</label>
+        <select id="joke-cat">
+          <option value="Programming">Programming</option>
+          <option value="Misc">Misc</option>
+          <option value="Dark">Dark</option>
+          <option value="Spooky">Spooky</option>
+          <option value="Christmas">Christmas</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <select id="joke-type">
+          <option value="twopart">Two-part (Setup + Delivery)</option>
+          <option value="single">Single</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchJoke()">
+          <span class="spinner" id="joke-spin" style="display:none"></span>
+          Get Joke
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('joke','xhr')">XHR Method</button>
+      <button class="tab" onclick="showTab('joke','fetch')">fetch() Method</button>
+    </div>
+
+    <div id="joke-xhr-tab">
+      <div class="response-label"><span>XMLHttpRequest</span><span id="joke-xhr-status"></span></div>
+      <div class="response-box" id="joke-xhr-box">Click "Get Joke" to use XHRâ€¦</div>
+    </div>
+    <div id="joke-fetch-tab" style="display:none">
+      <div class="response-label"><span>fetch() API</span><span id="joke-fetch-status"></span></div>
+      <div class="response-box" id="joke-fetch-box">Click "Get Joke" to use fetch()â€¦</div>
+    </div>
+
+    <div id="joke-display" style="display:none;margin-top:16px">
+      <div class="card" style="border-color:rgba(0,212,168,.25);margin:0">
+        <div class="joke-setup" id="joke-setup"></div>
+        <div class="joke-punchline" id="joke-punchline"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === DOG === -->
+<div class="panel" id="panel-dog">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ¶ Dog Image API</div>
+      <div class="section-sub">Random dog images from Dog.CEO API Â· Demonstrates async/await</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo uses <strong>async/await</strong> syntax with <code>fetch()</code> to chain two API calls: first get a list of breeds, then fetch an image for the selected breed. Source: <strong>dog.ceo/dog-api</strong>.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Fetch Dog by Breed</div>
+    <div class="row">
+      <div class="field">
+        <label>Breed</label>
+        <select id="dog-breed">
+          <option value="random">Random</option>
+          <option value="husky">Husky</option>
+          <option value="labrador">Labrador</option>
+          <option value="poodle">Poodle</option>
+          <option value="beagle">Beagle</option>
+          <option value="corgi">Corgi</option>
+          <option value="shiba">Shiba</option>
+          <option value="dalmatian">Dalmatian</option>
+          <option value="golden">Golden Retriever</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchDog()">
+          <span class="spinner" id="dog-spin" style="display:none"></span>
+          Fetch Image
+        </button>
+      </div>
+    </div>
+    <div id="dog-result-meta" class="response-label" style="margin-bottom:8px;display:none">
+      <span id="dog-url"></span>
+      <span id="dog-status"></span>
+    </div>
+    <img id="dog-img" alt="Dog photo">
+    <div class="response-label" style="margin-top:14px"><span>Raw Response</span></div>
+    <div class="response-box" id="dog-raw">Click "Fetch Image" to load a dog photoâ€¦</div>
+  </div>
+</div>
+
+<!-- === QUOTE === -->
+<div class="panel" id="panel-quote">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ’¬ Quote API</div>
+      <div class="section-sub">Inspirational quotes Â· Demonstrates Promise chaining</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo uses <strong>Promise chaining</strong> (<code>.then().catch()</code>) with <code>fetch()</code> to retrieve a random quote. It also shows how to handle CORS using a proxy. Source: <strong>quotable.io</strong>.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Fetch Quote</div>
+    <div class="row">
+      <div class="field">
+        <label>Category / Tag</label>
+        <select id="quote-tag">
+          <option value="">Any</option>
+          <option value="technology">Technology</option>
+          <option value="wisdom">Wisdom</option>
+          <option value="success">Success</option>
+          <option value="life">Life</option>
+          <option value="education">Education</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchQuote()">
+          <span class="spinner" id="quote-spin" style="display:none"></span>
+          Get Quote
+        </button>
+      </div>
+    </div>
+
+    <div id="quote-display" style="display:none">
+      <div class="card" style="border-color:rgba(79,143,255,.25);margin:8px 0 16px">
+        <div class="quote-text" id="quote-text"></div>
+        <div class="quote-author" id="quote-author"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="quote-tags"></div>
+      </div>
+    </div>
+
+    <div class="response-label"><span>Promise Chain Log</span><span id="quote-status"></span></div>
+    <div class="response-box" id="quote-raw">Click "Get Quote" to startâ€¦</div>
+  </div>
+</div>
+
+<!-- === IP === -->
+<div class="panel" id="panel-ip">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸŒ IP Geolocation API</div>
+      <div class="section-sub">Lookup IP address info Â· Parallel requests with Promise.all()</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo uses <strong>Promise.all()</strong> to fire two API calls simultaneously â€” one for your current IP, one for any IP you enter. It shows how to run parallel AJAX requests efficiently. Source: <strong>ip-api.com</strong>.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Lookup IP Address</div>
+    <div class="row">
+      <div class="field">
+        <label>IP Address (leave blank for your own)</label>
+        <input type="text" id="ip-input" placeholder="e.g. 8.8.8.8 or blank for yours">
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchIP()">
+          <span class="spinner" id="ip-spin" style="display:none"></span>
+          Lookup
+        </button>
+      </div>
+    </div>
+
+    <div id="ip-result" style="display:none">
+      <div class="ip-info-grid" id="ip-grid"></div>
+    </div>
+
+    <div class="response-label" style="margin-top:14px"><span>Raw JSON</span><span id="ip-status"></span></div>
+    <div class="response-box" id="ip-raw">Click "Lookup" to startâ€¦</div>
+  </div>
+</div>
+
+<!-- === CURRENCY === -->
+<div class="panel" id="panel-currency">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ’± Currency Exchange</div>
+      <div class="section-sub">Real-time exchange rates Â· Chained AJAX requests</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>Uses the free <strong>Frankfurter API</strong> (no key required) to fetch live exchange rates. Demonstrates how to build a multi-step AJAX flow â€” first get available currencies, then fetch the rate.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Convert Amount</div>
+    <div class="row">
+      <div class="field">
+        <label>Amount</label>
+        <input type="text" id="fx-amount" value="100">
+      </div>
+      <div class="field">
+        <label>From</label>
+        <select id="fx-from">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="PHP">PHP</option>
+          <option value="JPY">JPY</option>
+          <option value="GBP">GBP</option>
+          <option value="AUD">AUD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>To</label>
+        <select id="fx-to">
+          <option value="PHP">PHP</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="JPY">JPY</option>
+          <option value="GBP">GBP</option>
+          <option value="AUD">AUD</option>
+          <option value="SGD">SGD</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary" onclick="fetchCurrency()">
+          <span class="spinner" id="fx-spin" style="display:none"></span>
+          Convert
+        </button>
+      </div>
+    </div>
+
+    <div id="fx-result" style="display:none">
+      <div class="currency-result" id="fx-converted"></div>
+      <div class="currency-rate" id="fx-rate"></div>
+      <div class="response-label" style="margin-top:14px"><span>API Response</span><span id="fx-status"></span></div>
+      <div class="response-box" id="fx-raw"></div>
+    </div>
+  </div>
+</div>
+
+<!-- === WEBHOOK === -->
+<div class="panel" id="panel-webhook">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸª Webhook Simulator</div>
+      <div class="section-sub">Simulate receiving and processing webhooks in real time</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This panel simulates a <strong>webhook receiver</strong>. In production, a webhook is an HTTP POST sent by a third-party service (like Stripe, GitHub, Twilio) to your server URL when an event happens. Below we simulate sending and receiving those events.</span>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Send Simulated Webhook</div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Event Type</label>
+        <select id="wh-event">
+          <option value="payment.success">payment.success</option>
+          <option value="payment.failed">payment.failed</option>
+          <option value="user.signup">user.signup</option>
+          <option value="order.created">order.created</option>
+          <option value="message.received">message.received</option>
+          <option value="subscription.cancelled">subscription.cancelled</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Payload (JSON)</label>
+        <textarea id="wh-payload" rows="5">{
+  "id": "evt_001",
+  "amount": 2500,
+  "currency": "PHP",
+  "status": "succeeded"
+}</textarea>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" onclick="simulateWebhook()">
+          <span class="spinner" id="wh-spin" style="display:none"></span>
+          Fire Webhook
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="clearWebhookLog()">Clear Log</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Webhook Receiver Log <span class="pill" id="wh-count">0 events</span></div>
+      <div id="wh-metric-row" class="metric-row" style="display:none">
+        <div class="metric">
+          <div class="metric-label">Total Received</div>
+          <div class="metric-value blue" id="wh-total">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Last Event</div>
+          <div class="metric-value green" id="wh-last">â€”</div>
+        </div>
+      </div>
+      <div class="webhook-log" id="wh-log">
+        <div style="color:var(--muted);font-size:12px;padding:12px 0;text-align:center">Waiting for eventsâ€¦</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <div class="card-title">How Webhooks Work â€” Key Concepts</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="background:var(--surface2);border-radius:8px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">ðŸ“¡</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">1. Event Triggered</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">The third-party service detects an event (e.g. payment complete) and prepares a POST request.</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">ðŸ“®</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">2. HTTP POST Sent</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">The service sends a JSON payload to your registered webhook URL via HTTP POST.</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:14px">
+        <div style="font-size:20px;margin-bottom:6px">âš™ï¸</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">3. Your Server Responds</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">Your app receives the POST, processes the data, and returns HTTP 200 to acknowledge.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === POST REQUEST === -->
+<div class="panel" id="panel-post">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ“¤ POST Request Demo</div>
+      <div class="section-sub">Send data to JSONPlaceholder API Â· fetch() with POST method</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="icon">â„¹ï¸</span>
+    <span>This demo sends data to <strong>JSONPlaceholder</strong> (a free fake REST API for testing) using <code>fetch()</code> with <code>method: 'POST'</code>. This is the same pattern used to submit form data, create records, or trigger webhooks.</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Create Post <span class="pill">JSONPlaceholder</span></div>
+    <div class="row">
+      <div class="field">
+        <label>User ID</label>
+        <input type="text" id="post-userid" value="1" style="max-width:80px">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Title</label>
+      <input type="text" id="post-title" value="Lab Work 1 â€” AJAX Integration">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Body</label>
+      <textarea id="post-body" rows="3">This demonstrates a POST request using fetch() to submit data to a REST API endpoint.</textarea>
+    </div>
+
+    <div class="field" style="margin-bottom:10px">
+      <label>Content-Type Header</label>
+      <select id="post-ctype">
+        <option value="application/json">application/json</option>
+        <option value="text/plain">text/plain</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="sendPost()">
+      <span class="spinner" id="post-spin" style="display:none"></span>
+      Send POST Request
+    </button>
+
+    <hr class="divider">
+
+    <div class="response-label"><span>Request Preview</span></div>
+    <div class="response-box" id="post-preview" style="min-height:60px">Fill in the fields above to preview the requestâ€¦</div>
+
+    <div class="response-label" style="margin-top:12px"><span>Server Response</span><span id="post-status"></span></div>
+    <div class="response-box" id="post-raw" style="min-height:60px">Response will appear hereâ€¦</div>
+  </div>
+</div>
+
+<!-- === LOG === -->
+<div class="panel" id="panel-log">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ“‹ Activity Log</div>
+      <div class="section-sub">All API calls made in this session</div>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="clearLog()">Clear</button>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric"><div class="metric-label">Total Requests</div><div class="metric-value blue" id="log-total">0</div></div>
+    <div class="metric"><div class="metric-label">Successful</div><div class="metric-value green" id="log-ok">0</div></div>
+    <div class="metric"><div class="metric-label">Errors</div><div class="metric-value red" id="log-err">0</div></div>
+  </div>
+
+  <div class="card">
+    <div id="log-entries">
+      <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No activity yet. Try fetching data from any panel.</div>
+    </div>
+  </div>
+</div>
+
+<!-- === ABOUT === -->
+<div class="panel" id="panel-about">
+  <div class="section-head">
+    <div>
+      <div class="section-title">ðŸ“– How It Works</div>
+      <div class="section-sub">Technical overview of AJAX and Webhooks</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">AJAX Techniques Used</div>
+      <div style="font-size:13px;line-height:1.8;color:var(--text)">
+        <p style="margin-bottom:10px"><strong style="color:var(--accent)">XMLHttpRequest (XHR)</strong> â€” The original AJAX method. Used in the Joke API panel. Asynchronous, event-driven.</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--accent)">fetch() with .then()</strong> â€” Modern Promise-based API. Used in Quote and Dog panels. Cleaner syntax than XHR.</p>
+        <p style="margin-bottom:10px"><strong style="color:var(--accent)">async/await</strong> â€” Syntactic sugar over Promises. Used in Weather and Currency panels. Most readable approach.</p>
+        <p><strong style="color:var(--accent)">Promise.all()</strong> â€” Parallel requests. Used in IP Geolocation to fire two calls simultaneously.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Third-Party APIs Used</div>
+      <div style="font-size:12px;line-height:2;">
+        <div>ðŸŒ¤ <strong>Open-Meteo</strong> â€” open-meteo.com â€” Weather data</div>
+        <div>ðŸ˜„ <strong>JokeAPI v2</strong> â€” jokeapi.dev â€” Programming jokes</div>
+        <div>ðŸ¶ <strong>Dog.CEO</strong> â€” dog.ceo/dog-api â€” Dog images</div>
+        <div>ðŸ’¬ <strong>Quotable.io</strong> â€” api.quotable.io â€” Random quotes</div>
+        <div>ðŸŒ <strong>ip-api.com</strong> â€” ip-api.com â€” IP geolocation</div>
+        <div>ðŸ’± <strong>Frankfurter</strong> â€” frankfurter.app â€” Currency rates</div>
+        <div>ðŸ“¤ <strong>JSONPlaceholder</strong> â€” jsonplaceholder.typicode.com â€” Fake REST API</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cloud IDE Deployment Notes</div>
+    <div style="font-size:13px;line-height:1.8">
+      <p><strong style="color:var(--accent2)">Replit</strong> â€” Upload this HTML file, click Run. Replit serves it as a static page at your project's URL. Share the URL directly.</p>
+      <p style="margin-top:8px"><strong style="color:var(--accent2)">CodeSandbox</strong> â€” Create a new "Static" sandbox, replace index.html with this file. The preview URL is shareable and works immediately.</p>
+      <p style="margin-top:8px"><strong style="color:var(--accent2)">Glitch</strong> â€” Create a new project â†’ "glitch-hello-website", paste this file as index.html. Live URL is available instantly at <code>your-project.glitch.me</code>.</p>
+      <p style="margin-top:8px">All APIs used are <strong>CORS-enabled</strong> and require <strong>no API keys</strong>, so this works in any browser without a backend.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
